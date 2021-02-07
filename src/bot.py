@@ -11,7 +11,6 @@ from random import choice
 import asyncio
 
 last = None
-
 bot = commands.Bot(command_prefix=['clip!', 'c!'])
 
 @bot.event
@@ -35,7 +34,8 @@ async def play(ctx, *args):
     global last 
     last = args[0]
     user_channel = ctx.author.voice.channel
-    
+
+  
     voice_client = None 
     if ctx.me.voice is None or ctx.me.voice.channel != user_channel:
         voice_client = await user_channel.connect() 
@@ -61,5 +61,22 @@ async def replay(ctx):
     if last is None: 
         return 
     await play(ctx, last)
+
+@bot.event
+async def on_voice_state_update(member, before, after) :
+
+    if before.channel is None and after.channel is not None and not member.bot:
+        voice_client = await after.channel.connect() 
+        voice_client.play(FFmpegPCMAudio("../clips/voice01.mp3"))
+        while voice_client.is_playing(): 
+            await(asyncio.sleep(0.2))
+        try:
+            if voice_client.channel is not None:
+                await voice_client.disconnect() 
+        except AttributeError:
+            pass 
+
+    
+        
 
 bot.run(settings.DISCORD_TOKEN)
