@@ -100,14 +100,14 @@ SENTENCES = [
 ]
 
 @bot.command(aliases=["b"])
-async def blame(ctx, *args):
+async def cursing(ctx, *args):
     """
-    Blame other people
+    Curse other people
     
     Example: `?b ทู`
     """
     
-    FILENAME = 'blame.mp3'
+    FILENAME = 'curse.mp3'
     
     if len(args) == 0:
         print("No args, idiot.")
