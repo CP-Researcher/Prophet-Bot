@@ -1,7 +1,7 @@
 import sys 
 sys.path.append('..')
 from discord.ext import commands
-from discord import FFmpegPCMAudio
+from discord import FFmpegPCMAudio, Embed
 
 import os 
 import json 
@@ -47,6 +47,11 @@ async def play(ctx, *args):
         if ctx.author.voice is None: 
             print("Connect to voice, idiot.")
         return 
+    if args[0] == 'help':
+        text = ", ".join([f'`{x}`' for x in sentence_mapper.keys()])
+        embed = Embed(title='🧐Sasada Teaching Lession', description=text, color=0xae00ff)
+        await ctx.send(embed=embed)
+        return
     if args[0] not in sentence_mapper.keys():
         print("No this sentence in sentence_mapper")
         await ctx.reply("Not this sentence in list")
@@ -83,7 +88,11 @@ async def get_existing_sentences(ctx):
     Example: `?ls`
     """
     global sentence_mapper
-    await ctx.reply("```python\n Existing sentences\n{}```".format('\n'.join([sentence for sentence in sentence_mapper])))
+    embed = Embed(title="Sasada Bot Command List  ", description="wanna learn some Sasada's teaching 👉👌 kiddo?", color=0xae00ff)
+    embed.add_field(name="Teaching", value="`?p action`\n", inline=True)
+    embed.add_field(name="Cursing", value="`?b name`\nrandomly cursing ur friend", inline=True)
+    await ctx.send(embed=embed)
+    # await ctx.reply("```python\n Existing sentences\n{}```".format('\n'.join([sentence for sentence in sentence_mapper])))
 
 
 SENTENCES = [
