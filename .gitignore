@@ -6,8 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
-# clips
+# local data 
 clips/
+sentence_mapper.json
 
 # Distribution / packaging
 .Python
