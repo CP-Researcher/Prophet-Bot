@@ -11,7 +11,7 @@ extracted_data = re.findall(r'src=\"(.*\.mp3)\".*\">([^\"<]*)<', raw_sounds.text
 
 sentence_mapper = dict() 
 for (filename, sentence) in tqdm(extracted_data):
-    sentence_mapper[sentence.strip()] = filename
+    sentence_mapper[' '.join(sentence.split()).strip()] = filename
     r = requests.get(f'https://prophet-button.netlify.app/sound/{filename}')
     with open(f'clips/{filename}', 'wb') as f:
         f.write(r.content)
