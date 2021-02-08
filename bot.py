@@ -166,7 +166,7 @@ async def on_voice_state_update(member, before, after) :
 
     if before.channel is None and after.channel is not None and not member.bot:
         voice_client = await after.channel.connect() 
-        voice_client.play(FFmpegPCMAudio("clips/voice01.mp3"))
+        voice_client.play(FFmpegPCMAudio("clips/สวัสดีครับ.mp3"))
         while voice_client.is_playing(): 
             await(asyncio.sleep(0.2))
         try:
