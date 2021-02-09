@@ -167,6 +167,12 @@ GREETINGS = [
 
 @bot.event
 async def on_voice_state_update(member, before, after) :
+    """
+        This event could trigger when someone update their voice state
+        voice state: None, self mute, self deafen, connect to channel ,etc.
+
+        But for now we use it as "connect to some channel from None" greeting (change channel excluded)
+    """
     global voice_client
     
     if before.channel is None and after.channel is not None and not member.bot:
