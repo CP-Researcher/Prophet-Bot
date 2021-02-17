@@ -76,7 +76,7 @@ async def play(ctx, *args):
         await(asyncio.sleep(0.2))
         
 @bot.command(aliases=["loop"])
-async def play(ctx, *args):
+async def play_loop(ctx, *args):
     """
     Play sounds
     
