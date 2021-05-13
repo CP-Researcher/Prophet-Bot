@@ -221,9 +221,18 @@ async def on_voice_state_update(member, before, after) :
         voice_client = await after.channel.connect() 
         await(asyncio.sleep(0.5))
         
+<<<<<<< HEAD
         FILENAME = 'clips/welcome.mp3'
         tts = gTTS(text=choice(GREETINGS).format(name=member.display_name), lang='th')
         tts.save(FILENAME)
+=======
+        if uniform(0, 1) > 0.3:
+            FILENAME = 'clips/welcome.mp3'
+            tts = gTTS(text=choice(GREETINGS).format(name=member.display_name), lang='th')
+            tts.save(FILENAME)
+        else:
+            FILENAME = 'clips/sà-wàt-dee kráp.mp3'
+>>>>>>> e1b278a382e458b103f091f441ecaca3acdf07e5
         
         voice_client.play(FFmpegPCMAudio(source=FILENAME))
         while voice_client.is_playing(): 
