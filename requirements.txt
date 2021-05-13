@@ -1,0 +1,5 @@
+discord
+python-dotenv
+gtts
+discord.py[voice]
+ffmpeg
