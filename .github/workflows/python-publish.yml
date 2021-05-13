@@ -35,6 +35,4 @@ jobs:
       env:
         DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
       run: |
-        python setup.py sdist bdist_wheel
         python bot.py
-        twine upload dist/*
