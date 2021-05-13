@@ -21,7 +21,7 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
-        apt-get install unzip
+        sudo apt-get install unzip
         python -m pip install --upgrade pip
         pip install setuptools wheel twine
         pip install -r requirements.txt
