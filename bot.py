@@ -253,7 +253,7 @@ async def on_voice_state_update(member, before, after) :
         
         if message in GREETINGS:
             FILENAME = 'clips/welcome.mp3'
-            tts = gTTS(text=choice(GREETINGS).format(name=member.display_name), lang='th')
+            tts = gTTS(text=message.format(name=member.display_name), lang='th')
             tts.save(FILENAME)
         else:
             FILENAME = f'clips/{message}'
