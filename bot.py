@@ -216,6 +216,8 @@ GREETINGS_FROM_FILE = [
     'pornhub-community-intro',
     'mei-die-dak',
     'nani_Pmxf5n3',
+    'hello_motherfrucker',
+    'untitled_P4tJN43',
 ]
 
 def download_file_from_myinstants(filename):
