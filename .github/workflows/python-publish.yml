@@ -31,8 +31,3 @@ jobs:
     - name: Download sounds and mapping
       run: |
         python url2mp3.py
-    - name: Build and publish
-      env:
-        DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-      run: |
-        python bot.py
