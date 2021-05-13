@@ -212,18 +212,21 @@ GREETINGS = [
 ]
 
 GREETINGS_FROM_FILE = [
-    'untitled_w7XXL08',
-    'pornhub-community-intro',
-    'mei-die-dak',
-    'nani_Pmxf5n3',
-    'hello_motherfrucker',
-    'untitled_P4tJN43',
+    'untitled_w7XXL08.mp3',
+    'pornhub-community-intro.mp3',
+    'mei-die-dak.mp3',
+    'hello_motherfrucker.mp3',
+    'untitled_P4tJN43.mp3',
+    '.mp3_5M3Zb4t',
+    'among.mp3',
+    'kids_cheering.mp3',
+    'dry-fart.mp3',
 ]
 
 def download_file_from_myinstants(filename):
-    url = f'https://www.myinstants.com/media/sounds/{filename}.mp3'
+    url = f'https://www.myinstants.com/media/sounds/{filename}'
     r = requests.get(url)
-    with open(f'clips/{filename}.mp3', 'wb') as f:
+    with open(f'clips/{filename}', 'wb') as f:
         for chunk in r.iter_content(chunk_size=1024): 
             if chunk: # filter out keep-alive new chunks
                 f.write(chunk)
@@ -253,7 +256,7 @@ async def on_voice_state_update(member, before, after) :
             tts = gTTS(text=choice(GREETINGS).format(name=member.display_name), lang='th')
             tts.save(FILENAME)
         else:
-            FILENAME = f'clips/{message}.mp3'
+            FILENAME = f'clips/{message}'
             
         voice_client.play(FFmpegPCMAudio(source=FILENAME))
         while voice_client.is_playing(): 
