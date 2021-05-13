@@ -209,6 +209,28 @@ GREETINGS = [
     '{name} ออกไปเดี๋ยวนี้เลยนะ',
     '{name} ออกไปไกลๆเลย',
     'อยากรู้มั้ยว่าใครเข้ามา ไม่บอกหรอก',
+    '{name} บอก กามู',
+]
+
+BYES = [
+    'ใครจะอยู่ก็อยู่ แต่ {name} ไม่อยู่แล้ว',
+    '{name} ออกไปทำเหี้ยไร',
+    '{name} ออกไปแล้ว แต่ลุงตู่ยังไม่ออก',
+    '{name} ไปละ ด่ามันได้',
+    'จะไปไหนก็ไป {name}',
+    'กูถีบไอ่ {name} ออกไปแล้ว',
+    'ลาก่อย {name}',
+    'ไอ่ {name} มันหนีไปกรอกน้ำให้แม่',
+    '{name} บอกว่าไกปู',
+    '{name} กับเพื่อนกับฝูงไม่เคยจะอยู่',
+    'ใครออกไปน้า อ๋อ ไม่บอกหรอก',
+    'ใครออกไปน้า อ๋อ {name}',
+    'ไอ่เอ๋อนี่ออกไปอีกละ'
+]
+
+BYES_FROM_FILE = [
+    'preview_4.mp3',
+    'disconnect.mp3',
 ]
 
 GREETINGS_FROM_FILE = [
@@ -235,6 +257,9 @@ def download_file_from_myinstants(filename):
 for name in GREETINGS_FROM_FILE:
     download_file_from_myinstants(name)
 
+for name in BYES_FROM_FILE:
+    download_file_from_myinstants(name)
+
 @bot.event
 async def on_voice_state_update(member, before, after) :
     """
@@ -244,7 +269,7 @@ async def on_voice_state_update(member, before, after) :
         But for now we use it as "connect to some channel from None" greeting (change channel excluded)
     """
     global voice_client
-    
+
     if before.channel is None and after.channel is not None and not member.bot:
         voice_client = await after.channel.connect() 
         await(asyncio.sleep(0.5))
@@ -258,6 +283,26 @@ async def on_voice_state_update(member, before, after) :
         else:
             FILENAME = f'clips/{message}'
             
+        voice_client.play(FFmpegPCMAudio(source=FILENAME))
+        while voice_client.is_playing(): 
+            await(asyncio.sleep(0.5))
+        try:
+            if voice_client.channel is not None:
+                await voice_client.disconnect() 
+        except AttributeError:
+            pass
+    if before.channel is not None and after.channel is None and not member.bot :
+        voice_client = await before.channel.connect() 
+        await(asyncio.sleep(0.5))
+        message = choice(BYES + BYES_FROM_FILE)
+
+        if message in BYES:
+            FILENAME = 'clips/bye.mp3'
+            tts = gTTS(text=message.format(name=member.display_name), lang='th')
+            tts.save(FILENAME)
+        else :
+            FILENAME = f'clips/{message}'
+        
         voice_client.play(FFmpegPCMAudio(source=FILENAME))
         while voice_client.is_playing(): 
             await(asyncio.sleep(0.5))
