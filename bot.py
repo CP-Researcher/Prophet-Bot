@@ -7,6 +7,7 @@ import os
 import json 
 import asyncio
 import settings 
+import requests
 
 from random import choice, uniform
 from os import path
@@ -204,12 +205,30 @@ GREETINGS = [
     'อย่าหลอน {name}',
     'ออกไปเลย {name}',
     'ใครเข้ามาหน่ะ อ๋อ {name}',
-    'ฉันไม่อยากคุยกับ {name} หรอก',
     '{name} เข้ามาทำไม',
     '{name} ออกไปเดี๋ยวนี้เลยนะ',
     '{name} ออกไปไกลๆเลย',
     'อยากรู้มั้ยว่าใครเข้ามา ไม่บอกหรอก',
 ]
+
+GREETINGS_FROM_FILE = [
+    'untitled_w7XXL08',
+    'pornhub-community-intro',
+    'mei-die-dak',
+    'nani_Pmxf5n3',
+]
+
+def download_file_from_myinstants(filename):
+    url = f'https://www.myinstants.com/media/sounds/{filename}.mp3'
+    r = requests.get(url)
+    with open(f'clips/{filename}.mp3', 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024): 
+            if chunk: # filter out keep-alive new chunks
+                f.write(chunk)
+    return None
+
+for name in GREETINGS_FROM_FILE:
+    download_file_from_myinstants(name)
 
 @bot.event
 async def on_voice_state_update(member, before, after) :
@@ -225,10 +244,15 @@ async def on_voice_state_update(member, before, after) :
         voice_client = await after.channel.connect() 
         await(asyncio.sleep(0.5))
         
-        FILENAME = 'clips/welcome.mp3'
-        tts = gTTS(text=choice(GREETINGS).format(name=member.display_name), lang='th')
-        tts.save(FILENAME)
+        message = choice(GREETINGS + GREETINGS_FROM_FILE)
         
+        if message in GREETINGS:
+            FILENAME = 'clips/welcome.mp3'
+            tts = gTTS(text=choice(GREETINGS).format(name=member.display_name), lang='th')
+            tts.save(FILENAME)
+        else:
+            FILENAME = f'clips/{message}.mp3'
+            
         voice_client.play(FFmpegPCMAudio(source=FILENAME))
         while voice_client.is_playing(): 
             await(asyncio.sleep(0.5))
