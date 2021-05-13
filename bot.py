@@ -71,7 +71,7 @@ async def play(ctx, *args):
     if ctx.me.voice is None or ctx.me.voice.channel != user_channel:
         voice_client = await user_channel.connect() 
         
-    voice_client.play(FFmpegPCMAudio(executable="ffmpeg/bin/ffmpeg.exe", source=filename))
+    voice_client.play(FFmpegPCMAudio(source=filename))
     while voice_client.is_playing(): 
         await(asyncio.sleep(0.2))
         
@@ -112,7 +112,7 @@ async def play_loop(ctx, *args):
         voice_client = await user_channel.connect() 
         
     while True:
-        voice_client.play(FFmpegPCMAudio(executable="ffmpeg/bin/ffmpeg.exe", source=filename))
+        voice_client.play(FFmpegPCMAudio(source=filename))
         while voice_client.is_playing(): 
             await(asyncio.sleep(0.2))
     
@@ -162,11 +162,7 @@ async def cursing(ctx, *args):
         print("No args, idiot.")
         
     name = args[0]
-    if name == 'วิน':
-        n = 5
-    else:
-        n = 1
-    for i in range(n):
+    for i in range(1):
         tts = gTTS(text=choice(SENTENCES).format(name=name), lang='th')
         tts.save(FILENAME)
         user_channel = ctx.author.voice.channel
@@ -174,7 +170,7 @@ async def cursing(ctx, *args):
         if ctx.me.voice is None or ctx.me.voice.channel != user_channel:
             voice_client = await user_channel.connect() 
             
-        voice_client.play(FFmpegPCMAudio(executable="ffmpeg/bin/ffmpeg.exe", source=FILENAME))
+        voice_client.play(FFmpegPCMAudio(source=FILENAME))
         while voice_client.is_playing(): 
             await(asyncio.sleep(0.2))
     
@@ -200,10 +196,15 @@ async def replay(ctx):
 
 
 GREETINGS = [
-    'สวัสดี {name}',
-    'หวัดดี {name}',
-    'ยินดีต้อนรับ {name}',
-    '{name} เข้ามาแล้ว',
+    'จ๊ะเอ๋ {name}',
+    'ฮู่เล่ {name}',
+    'ยาเลยาเล {name}',
+    'ใครเข้ามาหน่ะ อ๋อ {name}',
+    'ไม่บอกก็รู้ว่า {name} เพิ่งเข้ามา',
+    '{name} เข้ามาทำไม',
+    '{name} ออกไปเดี๋ยวนี้เลยนะ',
+    'จ๊ะเอ๋ ใครที่ไหนเข้ามาน้า {name}',
+    'ใครเข้ามาค้าบเนี่ย {name}',
 ]
 
 @bot.event
@@ -220,14 +221,11 @@ async def on_voice_state_update(member, before, after) :
         voice_client = await after.channel.connect() 
         await(asyncio.sleep(0.5))
         
-        if uniform(0, 1) > 0.3:
-            FILENAME = 'clips/welcome.mp3'
-            tts = gTTS(text=choice(GREETINGS).format(name=member.name), lang='th')
-            tts.save(FILENAME)
-        else:
-            FILENAME = 'clips/sà-wàt-dee kráp.mp3'
+        FILENAME = 'clips/welcome.mp3'
+        tts = gTTS(text=choice(GREETINGS).format(name=member.display_name), lang='th')
+        tts.save(FILENAME)
         
-        voice_client.play(FFmpegPCMAudio(executable="ffmpeg/bin/ffmpeg.exe", source=FILENAME))
+        voice_client.play(FFmpegPCMAudio(source=FILENAME))
         while voice_client.is_playing(): 
             await(asyncio.sleep(0.5))
         try:
