@@ -14,15 +14,38 @@ from os import path
 from os import listdir
 from gtts import gTTS
 
+import requests
+import re 
+from tqdm import tqdm  
+
 last = None
 
-try:
-    with open('sentence_mapper.json', 'r') as f:
-        sentence_mapper = json.load(f)
-except:
-    print('Please create sentence_mapper.json')
-    exit()
+def create_sentence_mapper():
+    os.makedirs('clips', exist_ok=True)
 
+    raw_sounds = requests.get('https://prophet-button.netlify.app/')
+    extracted_data = re.findall(r'src=\"(.*\.mp3)\".*\">([^\"<]*)<', raw_sounds.text)
+
+    sentence_mapper = dict() 
+    for (filename, sentence) in tqdm(extracted_data):
+        sentence_mapper[' '.join(sentence.split()).strip()] = filename
+        r = requests.get(f'https://prophet-button.netlify.app/sound/{filename}')
+        with open(f'clips/{filename}', 'wb') as f:
+            f.write(r.content)
+
+    with open('sentence_mapper.json', 'w') as f:
+        json.dump(sentence_mapper, f)
+
+def get_sentence_mapper():
+    global sentence_mapper
+    try:
+        with open('sentence_mapper.json', 'r') as f:
+            sentence_mapper = json.load(f)
+    except FileNotFoundError:
+        create_sentence_mapper()
+        get_sentence_mapper()
+
+get_sentence_mapper()
 
 bot = commands.Bot(command_prefix=['clip!', 'c!', '?'])
 
