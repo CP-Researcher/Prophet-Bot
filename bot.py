@@ -2,6 +2,7 @@ import sys
 sys.path.append('..')
 from discord.ext import commands
 from discord import FFmpegPCMAudio, Embed
+from discord import utils
 
 import os 
 import json 
@@ -291,48 +292,59 @@ async def on_voice_state_update(member, before, after) :
 
         But for now we use it as "connect to some channel from None" greeting (change channel excluded)
     """
-    global voice_client
+    try:
+        global voice_client
 
-    if before.channel is None and after.channel is not None and not member.bot:
-        voice_client = await after.channel.connect() 
-        await(asyncio.sleep(0.5))
-        
-        message = choice(GREETINGS + GREETINGS_FROM_FILE)
-        
-        if message in GREETINGS:
-            FILENAME = 'clips/welcome.mp3'
-            tts = gTTS(text=message.format(name=member.display_name), lang='th')
-            tts.save(FILENAME)
-        else:
-            FILENAME = f'clips/{message}'
+        if before.channel is None and after.channel is not None and not member.bot:
+            voice_client = await after.channel.connect() 
+            await(asyncio.sleep(0.5))
             
-        voice_client.play(FFmpegPCMAudio(source=FILENAME))
-        while voice_client.is_playing(): 
+            message = choice(GREETINGS + GREETINGS_FROM_FILE)
+            
+            if message in GREETINGS:
+                FILENAME = 'clips/welcome.mp3'
+                tts = gTTS(text=message.format(name=member.display_name), lang='th')
+                tts.save(FILENAME)
+            else:
+                FILENAME = f'clips/{message}'
+                
+            voice_client.play(FFmpegPCMAudio(source=FILENAME))
+            while voice_client.is_playing(): 
+                await(asyncio.sleep(0.5))
+            try:
+                if voice_client.channel is not None:
+                    await voice_client.disconnect() 
+            except AttributeError:
+                pass
+            except Exception as e:
+                await sendMessage(str(e))
+        if before.channel is not None and after.channel is None and not member.bot :
+            voice_client = await before.channel.connect() 
             await(asyncio.sleep(0.5))
-        try:
-            if voice_client.channel is not None:
-                await voice_client.disconnect() 
-        except AttributeError:
-            pass
-    if before.channel is not None and after.channel is None and not member.bot :
-        voice_client = await before.channel.connect() 
-        await(asyncio.sleep(0.5))
-        message = choice(BYES + BYES_FROM_FILE)
+            message = choice(BYES + BYES_FROM_FILE)
 
-        if message in BYES:
-            FILENAME = 'clips/bye.mp3'
-            tts = gTTS(text=message.format(name=member.display_name), lang='th')
-            tts.save(FILENAME)
-        else :
-            FILENAME = f'clips/{message}'
-        
-        voice_client.play(FFmpegPCMAudio(source=FILENAME))
-        while voice_client.is_playing(): 
-            await(asyncio.sleep(0.5))
-        try:
-            if voice_client.channel is not None:
-                await voice_client.disconnect() 
-        except AttributeError:
-            pass
+            if message in BYES:
+                FILENAME = 'clips/bye.mp3'
+                tts = gTTS(text=message.format(name=member.display_name), lang='th')
+                tts.save(FILENAME)
+            else :
+                FILENAME = f'clips/{message}'
+            
+            voice_client.play(FFmpegPCMAudio(source=FILENAME))
+            while voice_client.is_playing(): 
+                await(asyncio.sleep(0.5))
+            try:
+                if voice_client.channel is not None:
+                    await voice_client.disconnect() 
+            except AttributeError:
+                pass
+            except Exception as e:
+                await sendMessage(str(e))
+    except Exception as e:
+        await sendMessage(str(e))
+
+async def sendMessage(errorMsg):
+    test_myChannel = utils.get(bot.get_all_channels(), name="general")
+    await test_myChannel.send(errorMsg)
 
 bot.run(settings.DISCORD_TOKEN)
