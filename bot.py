@@ -2,6 +2,7 @@ import sys
 sys.path.append('..')
 from discord.ext import commands
 from discord import FFmpegPCMAudio, Embed
+from discord import utils
 
 import os 
 import json 
@@ -14,15 +15,38 @@ from os import path
 from os import listdir
 from gtts import gTTS
 
+import requests
+import re 
+from tqdm import tqdm  
+
 last = None
 
-try:
-    with open('sentence_mapper.json', 'r') as f:
-        sentence_mapper = json.load(f)
-except:
-    print('Please create sentence_mapper.json')
-    exit()
+def create_sentence_mapper():
+    os.makedirs('clips', exist_ok=True)
 
+    raw_sounds = requests.get('https://prophet-button.netlify.app/')
+    extracted_data = re.findall(r'src=\"(.*\.mp3)\".*\">([^\"<]*)<', raw_sounds.text)
+
+    sentence_mapper = dict() 
+    for (filename, sentence) in tqdm(extracted_data):
+        sentence_mapper[' '.join(sentence.split()).strip()] = filename
+        r = requests.get(f'https://prophet-button.netlify.app/sound/{filename}')
+        with open(f'clips/{filename}', 'wb') as f:
+            f.write(r.content)
+
+    with open('sentence_mapper.json', 'w') as f:
+        json.dump(sentence_mapper, f)
+
+def get_sentence_mapper():
+    global sentence_mapper
+    try:
+        with open('sentence_mapper.json', 'r') as f:
+            sentence_mapper = json.load(f)
+    except FileNotFoundError:
+        create_sentence_mapper()
+        get_sentence_mapper()
+
+get_sentence_mapper()
 
 bot = commands.Bot(command_prefix=['clip!', 'c!', '?'])
 
@@ -133,19 +157,19 @@ async def get_existing_sentences(ctx):
 
 
 SENTENCES = [
-    'ไอ้ {name} ไอ้หน้าหี',
-    'ไอ้ {name} หัวควย',
-    'พ่อมึงตาย ไอ้ {name}',
-    'ไอ้ {name} ไอ้ควาย',
-    'ไอ้ {name} ไอ้สัส',
-    'ไอ้บ้าเอ้ย',
-    'อี ดอกทอง {name}',
-    'ไอ้สันขวาน {name}',
-    'ไอ้ระยำ {name}',
-    'ฉันไม่ด่าคุณหรอก คุณ {name}',
-    'ไอ้ {name} ไอ้หน้าหี ดับเบิ้ลหี สองหี สามหี',
-    'หลอนละมึง ไอ {name}',
-    'อย่าหลอนให้มาก ไอ้ {name}',
+    'เทสๆ ไอ้ {name} ไอ้หน้าหี',
+    'เทสๆ ไอ้ {name} หัวควย',
+    'เทสๆ พ่อมึงตาย ไอ้ {name}',
+    'เทสๆ ไอ้ {name} ไอ้ควาย',
+    'เทสๆ ไอ้ {name} ไอ้สัส',
+    'เทสๆ ไอ้บ้าเอ้ย',
+    'เทสๆ อี ดอกทอง {name}',
+    'เทสๆ ไอ้สันขวาน {name}',
+    'เทสๆ ไอ้ระยำ {name}',
+    'เทสๆ ฉันไม่ด่าคุณหรอก คุณ {name}',
+    'เทสๆ ไอ้ {name} ไอ้หน้าหี ดับเบิ้ลหี สองหี สามหี',
+    'เทสๆ หลอนละมึง ไอ {name}',
+    'เทสๆ อย่าหลอนให้มาก ไอ้ {name}',
 ]
 
 @bot.command(aliases=["b"])
