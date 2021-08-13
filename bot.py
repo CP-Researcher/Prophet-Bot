@@ -264,6 +264,7 @@ BYES_FROM_FILE = [
 ]
 
 GREETINGS_FROM_FILE = [
+    'cp-sound-really.mp3',
     'untitled_w7XXL08.mp3',
     'pornhub-community-intro.mp3',
     'mei-die-dak.mp3',
