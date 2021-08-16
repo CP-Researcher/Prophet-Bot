@@ -259,6 +259,7 @@ BYES = [
 BYES_FROM_FILE = [
     'preview_4.mp3',
     'disconnect.mp3',
+    'cp-sound-get-out.mp3',
 ]
 
 GREETINGS_FROM_FILE = [
