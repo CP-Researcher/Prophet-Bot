@@ -272,6 +272,25 @@ GREETINGS_FROM_FILE = [
     'dry-fart.mp3',
 ]
 
+ID_2_USER = {
+    332486822297075712 : 'flap'
+}
+
+USER_2_GREETINGS = {
+    'flap' : [
+        'โฟกัสอยู่นี่รึเปล่า',
+        'สวัสดีพวกหัวเหลี่ยม',
+        '{name} คิดถึงโฟกัสเลยมาหา'
+    ]
+}
+
+USER_2_BYES = {
+    'flap' : [
+        'โฟกัสไม่อยู่ {name} ไปละ',
+        'โฟกัสไม่อยู่ ผมไปดีกว่า'
+    ]
+}
+
 def download_file_from_myinstants(filename):
     url = f'https://www.myinstants.com/media/sounds/{filename}'
     r = requests.get(url)
@@ -298,16 +317,25 @@ async def on_voice_state_update(member, before, after) :
     global voice_client
 
     if before.channel is None and after.channel is not None and not member.bot:
+        
         voice_client = await after.channel.connect() 
         await(asyncio.sleep(0.5))
         
+
         message = choice(GREETINGS + GREETINGS_FROM_FILE)
+        is_user_specific = uniform(0,1) < 0.3
         
-        if message in GREETINGS:
+        if member.id in ID_2_USER and is_user_specific:
+            user_str = ID_2_USER[member.id]
+            message = choice(USER_2_GREETINGS[user_str])
             FILENAME = 'clips/welcome.mp3'
             tts = gTTS(text=message.format(name=member.display_name), lang='th')
             tts.save(FILENAME)
-        else:
+        elif message in GREETINGS:
+            FILENAME = 'clips/welcome.mp3'
+            tts = gTTS(text=message.format(name=member.display_name), lang='th')
+            tts.save(FILENAME)
+        elif message in GREETINGS_FROM_FILE:
             FILENAME = f'clips/{message}'
             
         voice_client.play(FFmpegPCMAudio(source=FILENAME))
@@ -322,8 +350,15 @@ async def on_voice_state_update(member, before, after) :
         voice_client = await before.channel.connect() 
         await(asyncio.sleep(0.5))
         message = choice(BYES + BYES_FROM_FILE)
+        is_user_specific = uniform(0,1) < 0.3
 
-        if message in BYES:
+        if member.id in ID_2_USER and is_user_specific:
+            user_str = ID_2_USER[member.id]
+            message = choice(USER_2_BYES[user_str])
+            FILENAME = 'clips/bye.mp3'
+            tts = gTTS(text=message.format(name=member.display_name), lang='th')
+            tts.save(FILENAME)
+        elif message in BYES:
             FILENAME = 'clips/bye.mp3'
             tts = gTTS(text=message.format(name=member.display_name), lang='th')
             tts.save(FILENAME)
